@@ -1,27 +1,42 @@
-// Usaremos short int porque será de 16 bits
+// Usaremos short porque será de 16 bits
 
-#ifdef MAQUINA_EJECUCION_H
+#ifndef MAQUINA_EJECUCION_H
 #define MAQUINA_EJECUCION_H
 
+#include <iostream>
+#include <string>
+#include <sstream>
+#include <cstdint>
+#include <fstream>
+#include <vector>
+
+// Constantes de la máquina para definir registros y memoria
 const int INSTRUCCIONES_MAXIMO = 1024; 
 const int DATOS_MAXIMO = 2048; 
 const int NUMERO_REGISTROS = 8; 
 const int PC_REGISTRO = 7; 
 
+// Lexemas del lenguaje
 enum TipoComando{ 
     HALT, IN, OUT, ADD, SUB, MUL, DIV, 
     LD, LDA, LDC, ST, 
     JLT, JLE, JGE, JGT, JEQ, JNE, 
     NONE 
-} 
+};
 
+// Estructura para representar cada línea
 struct Instruccion{
+    int16_t no_linea;
     TipoComando comando; 
-    short r, d, s, t;
-}
+    int16_t r, d, s, t;
+};
 
-extern short* reg[NUMERO_REGISTROS]; // Registros de la máquina
-extern short* datos_Memoria[DATOS_MAXIMO];
+extern int16_t* reg[NUMERO_REGISTROS]; // Registros de la máquina
+extern int16_t* datos_Memoria[DATOS_MAXIMO];
 
+
+void lexer(Instruccion* instrucciones, const std::string& path );
+
+TipoComando stringToTipoComando(const std::string& command); 
 
 #endif
