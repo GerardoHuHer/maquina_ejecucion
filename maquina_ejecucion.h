@@ -8,7 +8,6 @@
 #include <sstream>
 #include <cstdint>
 #include <fstream>
-#include <vector>
 
 // Constantes de la máquina para definir registros y memoria
 const int INSTRUCCIONES_MAXIMO = 1024; 
@@ -38,5 +37,6 @@ extern int16_t* datos_Memoria[DATOS_MAXIMO];
 void lexer(Instruccion* instrucciones, const std::string& path );
 
 TipoComando stringToTipoComando(const std::string& command); 
+void separar_variables(int16_t& r, int16_t& s, int16_t& t, int16_t& d, const std::string& operand_str);
 
 #endif
