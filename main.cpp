@@ -19,12 +19,20 @@ int main(int argc, char** argv) {
 
     lexer(instrucciones, argv[1]);
 
-    for(unsigned int i = 0; i < 10; i++){
-        // Imprimir solo las instrucciones válidas
-        if (instrucciones[i].comando != NONE) {
-            std::cout << "Instrucción en línea " << i << ": " << instrucciones[i].comando << std::endl;
-        }
-    }
+    
+
+    unsigned int i = 0;
+    do{
+        std::cout << "Instrucción en línea " << i << ": " << instrucciones[i].comando;
+        std::cout  << " r: " << instrucciones[i].r 
+                   << " s: " << instrucciones[i].s 
+                   << " t: " << instrucciones[i].t 
+                   << " d: " << instrucciones[i].d 
+                   << std::endl;
+        i++;
+    }while (instrucciones[i - 1].comando != HALT);
+    
+   
 
     delete[] instrucciones;
 
