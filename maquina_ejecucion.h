@@ -8,11 +8,13 @@
 #include <sstream>
 #include <cstdint>
 #include <fstream>
+#include <algorithm>
 
 // Constantes de la máquina para definir registros y memoria
 const int INSTRUCCIONES_MAXIMO = 1024; 
 const int DATOS_MAXIMO = 2048; 
 const int NUMERO_REGISTROS = 8; 
+
 const int PC_REGISTRO = 7; 
 
 // Lexemas del lenguaje
@@ -20,7 +22,6 @@ enum TipoComando{
     HALT, IN, OUT, ADD, SUB, MUL, DIV, 
     LD, LDA, LDC, ST, 
     JLT, JLE, JGE, JGT, JEQ, JNE, 
-    NONE 
 };
 
 // Estructura para representar cada línea
