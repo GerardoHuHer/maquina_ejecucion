@@ -22,7 +22,7 @@ int main(int argc, char** argv) {
         return a.no_linea < b.no_linea;
     });
 
-
+    /*
     unsigned int i = 0;
     do{
         std::cout << "Instrucción en línea " << i << ": " << instrucciones_memoria[i].comando;
@@ -33,6 +33,8 @@ int main(int argc, char** argv) {
                    << std::endl;
         i++;
     }while (instrucciones_memoria[i - 1].comando != HALT);
+    */
+    ejecutar_codigo(instrucciones_memoria);
 
     delete[] instrucciones_memoria;
 
