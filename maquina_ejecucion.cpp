@@ -1,6 +1,9 @@
 #include "maquina_ejecucion.h"
 
-TipoComando stringToTipoComando(const std::string& command) {
+int reg[NUMERO_REGISTROS];
+int datos_Memoria[DATOS_MAXIMO];
+
+TipoComando stringToTipoComando(const std::string& command, int linea) {
     if (command == "HALT") return HALT;
     if (command == "IN") return IN;
     if (command == "OUT") return OUT;
@@ -18,11 +21,13 @@ TipoComando stringToTipoComando(const std::string& command) {
     if (command == "JGT") return JGT;
     if (command == "JEQ") return JEQ;
     if (command == "JNE") return JNE;
+    std::cerr << "Comando desconocido: " << command << " en la línea " << linea << std::endl;
+    std::exit(EXIT_FAILURE);    
     return HALT;
 }
 
 // Función que recibe las variables r, s, d, t, la cadena con sus valores y la instruccion para saber como dividirlos
-void separar_variables( TipoComando instruccion, int16_t& r, int16_t& s, int16_t& t, int16_t& d, const std::string& operand_str) {
+void separar_variables( TipoComando instruccion, int& r, int& s, int& t, int& d, const std::string& operand_str, int linea) {
     // Para instrucción HALT donde inicializamos todos los valores en 0
     if(instruccion == HALT){
         r = 0; s = 0; t = 0; d = 0; 
@@ -39,7 +44,12 @@ void separar_variables( TipoComando instruccion, int16_t& r, int16_t& s, int16_t
         case OUT:
             // Lee la cadena, ignora los espacios y convierte a int.
             ss >> temp_str;
-            r = static_cast<int16_t>(std::stoi(temp_str));
+            try {
+                r = std::stoi(temp_str);
+            } catch (const std::invalid_argument& e) {
+                std::cerr << "Error: valor inválido para r en la línea " << linea << std::endl;
+                std::exit(EXIT_FAILURE);
+            }
             s = 0; t = 0; d = 0;
             break;
 
@@ -49,11 +59,11 @@ void separar_variables( TipoComando instruccion, int16_t& r, int16_t& s, int16_t
         case DIV:
             // Lee r, s y t, ignorando las comas.
             std::getline(ss, temp_str, ',');
-            r = static_cast<int16_t>(std::stoi(temp_str));
+            r = std::stoi(temp_str);
             std::getline(ss, temp_str, ',');
-            s = static_cast<int16_t>(std::stoi(temp_str));
+            s = std::stoi(temp_str);
             std::getline(ss, temp_str); // Lee hasta el final de la línea
-            t = static_cast<int16_t>(std::stoi(temp_str));
+            t = std::stoi(temp_str);
             d = 0;
             break;
         case LD:
@@ -68,11 +78,11 @@ void separar_variables( TipoComando instruccion, int16_t& r, int16_t& s, int16_t
         case JNE:
             // Lee r, d, y s.
             std::getline(ss, temp_str, ',');
-            r = static_cast<int16_t>(std::stoi((temp_str)));
+            r = std::stoi((temp_str));
             std::getline(ss, temp_str, '('); // Lee hasta el paréntesis
-            d = static_cast<int16_t>(std::stoi((temp_str)));
+            d = std::stoi((temp_str));
             std::getline(ss, temp_str, ')'); // Lee el valor de 's'
-            s = static_cast<int16_t>(std::stoi((temp_str)));
+            s = std::stoi((temp_str));
             t = 0;
             break;
 
@@ -118,20 +128,20 @@ void lexer(Instruccion* instrucciones, const std::string& path) {
             std::string num_str;
             // Transformamos la línea en stringstream
             std::getline(ss, num_str, ':'); // Leemos el número de línea
-            int16_t no_linea = static_cast<int16_t>(std::stoi(num_str));
+            int no_linea = std::stoi(num_str);
             instrucciones[index].no_linea = no_linea;
             if (no_linea >= 0 && no_linea < INSTRUCCIONES_MAXIMO) {
                 instrucciones[index].no_linea = no_linea;
 
                 std::string command_str;
                 ss >> command_str;
-                instrucciones[index].comando = stringToTipoComando(command_str);
+                instrucciones[index].comando = stringToTipoComando(command_str, no_linea);
 
 
                 std::string operand_str;
                 ss >> operand_str;
 
-                separar_variables(instrucciones[index].comando, instrucciones[index].r, instrucciones[index].s, instrucciones[index].t, instrucciones[index].d, operand_str);
+                separar_variables(instrucciones[index].comando, instrucciones[index].r, instrucciones[index].s, instrucciones[index].t, instrucciones[index].d, operand_str, no_linea);
                 index++;
 
                 continue;
@@ -139,9 +149,51 @@ void lexer(Instruccion* instrucciones, const std::string& path) {
                 std::cerr << "Número de línea fuera de rango: " << no_linea << std::endl;
             }
         } else {
-            std::cout << "error: la línea inicia con un caracter inválido: " << line << std::endl;
+            std::cout << "Error: la línea inicia con un caracter inválido: " << line << std::endl;
             std::exit(EXIT_FAILURE);
         }
     }
     inputFile.close();
+}
+
+
+void ejecutar_codigo(Instruccion* instrucciones){
+    int pc = 0; // program counter
+    while(pc < INSTRUCCIONES_MAXIMO && instrucciones[pc].comando != HALT){
+
+        switch (instrucciones[pc].comando){
+        case HALT: 
+            std::cout << "Fin de la ejecución" << std::endl;
+            return;
+            break;
+        case IN: 
+            std::cout << "> ";
+            std::cin >> reg[instrucciones[pc].r];
+            break;
+        case OUT: 
+            std::cout << "> " << reg[instrucciones[pc].r] << std::endl;
+            break;
+        case ADD: 
+            reg[instrucciones[pc].r] = reg[instrucciones[pc].s] + reg[instrucciones[pc].t];
+            break;
+        case SUB: 
+            reg[instrucciones[pc].r] = reg[instrucciones[pc].s] - reg[instrucciones[pc].t];
+            break;
+        case MUL: 
+            reg[instrucciones[pc].r] = reg[instrucciones[pc].s] * reg[instrucciones[pc].t];
+            break;
+        case DIV: 
+            if(reg[instrucciones[pc].t] == 0){
+                std::cerr << "Error: División por cero en la instrucción en línea " << instrucciones[pc].no_linea << std::endl;
+                return;
+            }
+            reg[instrucciones[pc].r] = reg[instrucciones[pc].s] / reg[instrucciones[pc].t];
+            break;
+
+        default:
+            break;
+        }
+        pc++;
+
+    }
 }
