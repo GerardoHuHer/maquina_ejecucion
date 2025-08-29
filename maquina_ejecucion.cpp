@@ -156,44 +156,111 @@ void lexer(Instruccion* instrucciones, const std::string& path) {
     inputFile.close();
 }
 
+void ejecutar_codigo(Instruccion* instrucciones) {
+    // Inicializamos el registro del Program Counter (registro 7) en 0.
+    reg[PC_REGISTRO] = 0;
+    int a;
 
-void ejecutar_codigo(Instruccion* instrucciones){
-    int pc = 0; // program counter
-    while(pc < INSTRUCCIONES_MAXIMO && instrucciones[pc].comando != HALT){
+    while (reg[PC_REGISTRO] < INSTRUCCIONES_MAXIMO && instrucciones[reg[PC_REGISTRO]].comando != HALT) {
+        // Obtenemos la instrucción actual
+        Instruccion current_instruction = instrucciones[reg[PC_REGISTRO]];
 
-        switch (instrucciones[pc].comando){
-        case HALT: 
-            std::cout << "Fin de la ejecución" << std::endl;
-            return;
-            break;
-        case IN: 
-            std::cout << "> ";
-            std::cin >> reg[instrucciones[pc].r];
-            break;
-        case OUT: 
-            std::cout << "> " << reg[instrucciones[pc].r] << std::endl;
-            break;
-        case ADD: 
-            reg[instrucciones[pc].r] = reg[instrucciones[pc].s] + reg[instrucciones[pc].t];
-            break;
-        case SUB: 
-            reg[instrucciones[pc].r] = reg[instrucciones[pc].s] - reg[instrucciones[pc].t];
-            break;
-        case MUL: 
-            reg[instrucciones[pc].r] = reg[instrucciones[pc].s] * reg[instrucciones[pc].t];
-            break;
-        case DIV: 
-            if(reg[instrucciones[pc].t] == 0){
-                std::cerr << "Error: División por cero en la instrucción en línea " << instrucciones[pc].no_linea << std::endl;
-                return;
-            }
-            reg[instrucciones[pc].r] = reg[instrucciones[pc].s] / reg[instrucciones[pc].t];
-            break;
+        // El switch ahora maneja la ejecución de la instrucción.
+        switch (current_instruction.comando) {
+            case IN:
+                std::cout << "? ";
+                std::cin >> reg[current_instruction.r];
+                break;
+            case OUT:
+                std::cout << "> " << reg[current_instruction.r] << std::endl;
 
-        default:
-            break;
+
+
+                break;
+            case ADD:
+                reg[current_instruction.r] = reg[current_instruction.s] + reg[current_instruction.t];
+                break;
+            case SUB:
+                reg[current_instruction.r] = reg[current_instruction.s] - reg[current_instruction.t];
+                break;
+            case MUL:
+                reg[current_instruction.r] = reg[current_instruction.s] * reg[current_instruction.t];
+                break;
+            case DIV:
+                if (reg[current_instruction.t] == 0) {
+                    std::cerr << "Error: División por cero en la instrucción en línea " << current_instruction.no_linea << std::endl;
+                    return;
+                }
+                reg[current_instruction.r] = reg[current_instruction.s] / reg[current_instruction.t];
+                break;
+            case LD:
+                a = current_instruction.d + reg[current_instruction.s];
+                if (a < 0 || a >= DATOS_MAXIMO) {
+                    std::cerr << "Error: Acceso a memoria fuera de límites en la línea " << current_instruction.no_linea << std::endl;
+                    return;
+                }
+                reg[current_instruction.r] = datos_Memoria[a];
+                break;
+            case LDA:
+                reg[current_instruction.r] = current_instruction.d + reg[current_instruction.s];
+                break;
+            case LDC:
+                reg[current_instruction.r] = current_instruction.d;
+                break;
+            case ST:
+                a = current_instruction.d + reg[current_instruction.s];
+                if (a < 0 || a >= DATOS_MAXIMO) {
+                    std::cerr << "Error: Acceso a memoria fuera de límites en la línea " << current_instruction.no_linea << std::endl;
+                    return;
+                }
+                datos_Memoria[a] = reg[current_instruction.r];
+                break;
+            case JLT:
+                if (reg[current_instruction.r] < 0) {
+                    //reg[PC_REGISTRO] = current_instruction.d;
+                    reg[PC_REGISTRO] = current_instruction.d + reg[current_instruction.s];
+                    continue; // Continuamos el bucle sin incrementar el PC
+                }
+                break;
+            case JLE:
+                if (reg[current_instruction.r] <= 0) {
+                    //reg[PC_REGISTRO] = current_instruction.d;
+                    reg[PC_REGISTRO] = current_instruction.d + reg[current_instruction.s];
+                    continue;
+                }
+                break;
+            case JGE:
+                if (reg[current_instruction.r] >= 0) {
+                    //reg[PC_REGISTRO] = current_instruction.d;
+                    reg[PC_REGISTRO] = current_instruction.d + reg[current_instruction.s];
+                    continue;
+                }
+                break;
+            case JGT:
+                if (reg[current_instruction.r] > 0) { 
+
+
+                    reg[PC_REGISTRO] = current_instruction.d + reg[current_instruction.s];
+                    continue;
+                }
+                break;
+            case JEQ:
+                if (reg[current_instruction.r] == 0) {
+                    //reg[PC_REGISTRO] = current_instruction.d + reg[instrucciones[]];
+
+                    reg[PC_REGISTRO] = current_instruction.d + reg[current_instruction.s];
+                    continue;
+                }
+                break;
+            case JNE:
+                if (reg[current_instruction.r] != 0) {
+                    reg[PC_REGISTRO] = current_instruction.d + reg[current_instruction.s];
+                    continue;
+                }
+                break;
         }
-        pc++;
 
+        // Si no se ejecutó un salto, incrementamos el PC para pasar a la siguiente instrucción.
+        reg[PC_REGISTRO]++;
     }
 }
