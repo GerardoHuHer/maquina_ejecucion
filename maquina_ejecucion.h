@@ -26,18 +26,20 @@ enum TipoComando{
 
 // Estructura para representar cada línea
 struct Instruccion{
-    int16_t no_linea;
+    int no_linea;
     TipoComando comando; 
-    int16_t r, d, s, t;
+    int r, d, s, t;
 };
 
-extern int16_t* reg[NUMERO_REGISTROS]; // Registros de la máquina
-extern int16_t* datos_Memoria[DATOS_MAXIMO];
+extern int reg[NUMERO_REGISTROS]; // Registros de la máquina
+extern int datos_Memoria[DATOS_MAXIMO];
 
 
 void lexer(Instruccion* instrucciones, const std::string& path );
 
-TipoComando stringToTipoComando(const std::string& command); 
-void separar_variables(int16_t& r, int16_t& s, int16_t& t, int16_t& d, const std::string& operand_str);
+TipoComando stringToTipoComando(const std::string& command, int); 
+
+void separar_variables( TipoComando instruccion, int& r, int& s, int& t, int& d, const std::string& operand_str, int);
+void ejecutar_codigo(Instruccion* arr);
 
 #endif
