@@ -1,0 +1,7 @@
+*, Programa que lee un número y cuenta hacia atrás hasta 1
+1:,IN,"0,0,0", Pedimos al usuario un número y lo guardamos en el registro 0
+2:,LDC,"1,1(0)", Cargamos la constante 1 en el registro 1. Lo usaremos para restar
+3:,OUT,"0,0,0", Imprimimos el valor actual del registro 0 (el número del usuario)
+4:,SUB,"0,0,1", Restamos el valor del registro 1 (1) al registro 0. reg[0]=reg[0]-reg[1]
+5:,JGT,"0,3(7)", Si el valor en el registro 0 es mayor que 0, saltamos a la línea 3 para continuar el bucle.
+6:,HALT,"0,0,0", Detenemos la ejecución cuando el bucle termine.
