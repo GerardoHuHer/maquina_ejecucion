@@ -10,7 +10,7 @@ int main(int argc, char** argv) {
     Instruccion* instrucciones_memoria= new Instruccion[INSTRUCCIONES_MAXIMO];
     for(unsigned int i = 0; i < INSTRUCCIONES_MAXIMO; i++){
         instrucciones_memoria[i].comando = HALT;
-        instrucciones_memoria[i].no_linea = i;
+        instrucciones_memoria[i].no_linea = 1024;
         instrucciones_memoria[i].r = 0;
         instrucciones_memoria[i].d = 0;
         instrucciones_memoria[i].s = 0;
@@ -22,18 +22,7 @@ int main(int argc, char** argv) {
         return a.no_linea < b.no_linea;
     });
 
-    /*
-    unsigned int i = 0;
-    do{
-        std::cout << "Instrucción en línea " << i << ": " << instrucciones_memoria[i].comando;
-        std::cout  << " r: " << instrucciones_memoria[i].r
-                   << " s: " << instrucciones_memoria[i].s
-                   << " t: " << instrucciones_memoria[i].t
-                   << " d: " << instrucciones_memoria[i].d
-                   << std::endl;
-        i++;
-    }while (instrucciones_memoria[i - 1].comando != HALT);
-    */
+   
     ejecutar_codigo(instrucciones_memoria);
 
     delete[] instrucciones_memoria;
