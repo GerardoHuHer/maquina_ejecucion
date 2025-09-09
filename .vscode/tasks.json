@@ -2,12 +2,13 @@
     "tasks": [
         {
             "type": "cppbuild",
-            "label": "C/C++: g++ build active file",
+            "label": "build and debug c++17",
             "command": "/usr/bin/g++",
             "args": [
                 "-fdiagnostics-color=always",
                 "-g",
-                "${file}",
+               "${workspaceFolder}/main.cpp",
+                "${workspaceFolder}/maquina_ejecucion.cpp",
                 "-o",
                 "${fileDirname}/${fileBasenameNoExtension}"
             ],
