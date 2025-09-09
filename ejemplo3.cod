@@ -4,5 +4,5 @@
 2: OUT 0,0,0 Imprimimos el valor actual del registro 0 (el número del usuario)
 3: SUB 0,0,1 Restamos el valor del registro 1 (1) al registro 0. reg[0]=reg[0]-reg[1]
 * 5: OUT 0,0,0 Linea para debugear
-4: JGT 0,3(7) Si el valor en el registro 0 es mayor que 0, saltamos a la línea 3 para continuar el bucle.
+4: JGT 0,-2(7) Si el valor en el registro 0 es mayor que 0, saltamos a la línea 3 para continuar el bucle.
 5: HALT 0,0,0 Detenemos la ejecución cuando el bucle termine.
