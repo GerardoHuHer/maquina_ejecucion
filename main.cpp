@@ -10,8 +10,7 @@ int main(int argc, char** argv) {
     Instruccion* instrucciones_memoria= new Instruccion[INSTRUCCIONES_MAXIMO];
     for(unsigned int i = 0; i < INSTRUCCIONES_MAXIMO; i++){
         instrucciones_memoria[i].comando = HALT;
-        instrucciones_memoria[i].no_linea = 1024;
-        instrucciones_memoria[i].r = 0;
+        instrucciones_memoria[i].no_linea = INSTRUCCIONES_MAXIMO + 1; 
         instrucciones_memoria[i].d = 0;
         instrucciones_memoria[i].s = 0;
         instrucciones_memoria[i].t = 0;
