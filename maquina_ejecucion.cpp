@@ -21,12 +21,12 @@ TipoComando stringToTipoComando(const std::string& command, int linea) {
     if (command == "JGT") return JGT;
     if (command == "JEQ") return JEQ;
     if (command == "JNE") return JNE;
+    if(command == "HALT") return HALT;
     std::cerr << "Comando desconocido: " << command << " en la línea " << linea << std::endl;
     std::exit(EXIT_FAILURE);    
     return HALT;
 }
 
-// Función que recibe las variables r, s, d, t, la cadena con sus valores y la instruccion para saber como dividirlos
 void separar_variables( TipoComando instruccion, int& r, int& s, int& t, int& d, const std::string& operand_str, int linea) {
     // Para instrucción HALT donde inicializamos todos los valores en 0
     if(instruccion == HALT){
@@ -173,9 +173,6 @@ void ejecutar_codigo(Instruccion* instrucciones) {
                 break;
             case OUT:
                 std::cout << "> " << reg[current_instruction.r] << std::endl;
-
-
-
                 break;
             case ADD:
                 reg[current_instruction.r] = reg[current_instruction.s] + reg[current_instruction.t];
