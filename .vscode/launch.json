@@ -6,7 +6,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/main.out",
-            "args": ["factorial.cod"],
+            "args": ["ejemplos/factorial.cod"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
