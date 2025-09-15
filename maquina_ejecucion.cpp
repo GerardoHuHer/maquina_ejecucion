@@ -102,7 +102,6 @@ void lexer(Instruccion* instrucciones, const std::string& path) {
     } 
 
     std::string line;
-    unsigned int index = 0;
     while (std::getline(inputFile, line)) {
 
 
@@ -129,21 +128,19 @@ void lexer(Instruccion* instrucciones, const std::string& path) {
             // Transformamos la línea en stringstream
             std::getline(ss, num_str, ':'); // Leemos el número de línea
             int no_linea = std::stoi(num_str);
-            instrucciones[index].no_linea = no_linea;
+            instrucciones[no_linea].no_linea = no_linea;
             if (no_linea >= 0 && no_linea < INSTRUCCIONES_MAXIMO) {
-                instrucciones[index].no_linea = no_linea;
+                instrucciones[no_linea].no_linea = no_linea;
 
                 std::string command_str;
                 ss >> command_str;
-                instrucciones[index].comando = stringToTipoComando(command_str, no_linea);
+                instrucciones[no_linea].comando = stringToTipoComando(command_str, no_linea);
 
 
                 std::string operand_str;
                 ss >> operand_str;
 
-                separar_variables(instrucciones[index].comando, instrucciones[index].r, instrucciones[index].s, instrucciones[index].t, instrucciones[index].d, operand_str, no_linea);
-                index++;
-
+                separar_variables(instrucciones[no_linea].comando, instrucciones[no_linea].r, instrucciones[no_linea].s, instrucciones[no_linea].t, instrucciones[no_linea].d, operand_str, no_linea);
                 continue;
             } else {
                 std::cerr << "Número de línea fuera de rango: " << no_linea << std::endl;
@@ -238,13 +235,12 @@ void ejecutar_codigo(Instruccion* instrucciones) {
 
 
                     reg[PC_REGISTRO] = current_instruction.d + reg[current_instruction.s];
+
                     continue;
                 }
                 break;
             case JEQ:
                 if (reg[current_instruction.r] == 0) {
-                    //reg[PC_REGISTRO] = current_instruction.d + reg[instrucciones[]];
-
                     reg[PC_REGISTRO] = current_instruction.d + reg[current_instruction.s];
                     continue;
                 }
@@ -252,6 +248,7 @@ void ejecutar_codigo(Instruccion* instrucciones) {
             case JNE:
                 if (reg[current_instruction.r] != 0) {
                     reg[PC_REGISTRO] = current_instruction.d + reg[current_instruction.s];
+
                     continue;
                 }
                 break;
@@ -260,4 +257,276 @@ void ejecutar_codigo(Instruccion* instrucciones) {
         // Si no se ejecutó un salto, incrementamos el PC para pasar a la siguiente instrucción.
         reg[PC_REGISTRO]++;
     }
+}
+
+
+void ejecutar_codigo_debug(Instruccion* instrucciones) {
+    // Inicializamos el registro del Program Counter (registro 7) en 0.
+    reg[PC_REGISTRO] = 0;
+    int a;
+
+    while (reg[PC_REGISTRO] < INSTRUCCIONES_MAXIMO && instrucciones[reg[PC_REGISTRO]].comando != HALT) {
+        // Obtenemos la instrucción actual
+        Instruccion current_instruction = instrucciones[reg[PC_REGISTRO]];
+
+        // El switch ahora maneja la ejecución de la instrucción.
+        switch (current_instruction.comando) {
+            case IN:
+                imprimir_estado_maquina(current_instruction);
+                std::cout << "? ";
+                std::cin >> reg[current_instruction.r];
+                std::cout << "Presiona Enter para continuar..." << std::endl;
+                std::cin.get();
+                break;
+            case OUT:
+                imprimir_estado_maquina(current_instruction);
+                std::cout << "> " << reg[current_instruction.r] << std::endl;
+                std::cout << "Presiona Enter para continuar..." << std::endl;
+                std::cin.get();
+                break;
+            case ADD:
+                imprimir_estado_maquina(current_instruction);
+                reg[current_instruction.r] = reg[current_instruction.s] + reg[current_instruction.t];
+                std::cout << "Presiona Enter para continuar..." << std::endl;
+                std::cin.get();
+                break;
+            case SUB:
+                imprimir_estado_maquina(current_instruction);
+                reg[current_instruction.r] = reg[current_instruction.s] - reg[current_instruction.t];
+                std::cout << "Presiona Enter para continuar..." << std::endl;
+                std::cin.get();
+                break;
+            case MUL:
+                imprimir_estado_maquina(current_instruction);
+                reg[current_instruction.r] = reg[current_instruction.s] * reg[current_instruction.t];
+                std::cout << "Presiona Enter para continuar..." << std::endl;
+                std::cin.get();
+                break;
+            case DIV:
+                imprimir_estado_maquina(current_instruction);
+                if (reg[current_instruction.t] == 0) {
+                    std::cerr << "Error: División por cero en la instrucción en línea " << current_instruction.no_linea << std::endl;
+                    return;
+                }
+                reg[current_instruction.r] = reg[current_instruction.s] / reg[current_instruction.t];
+                std::cout << "Presiona Enter para continuar..." << std::endl;
+                std::cin.get();
+                break;
+            case LD:
+                imprimir_estado_maquina(current_instruction);
+                a = current_instruction.d + reg[current_instruction.s];
+                if (a < 0 || a >= DATOS_MAXIMO) {
+                    std::cerr << "Error: Acceso a memoria fuera de límites en la línea " << current_instruction.no_linea << std::endl;
+                    return;
+                }
+                reg[current_instruction.r] = datos_Memoria[a];
+                std::cout << "Presiona Enter para continuar..." << std::endl;
+                std::cin.get();
+                break;
+            case LDA:
+                imprimir_estado_maquina(current_instruction);
+                reg[current_instruction.r] = current_instruction.d + reg[current_instruction.s];
+                std::cout << "Presiona Enter para continuar..." << std::endl;
+                std::cin.get();
+                break;
+            case LDC:
+                imprimir_estado_maquina(current_instruction);
+                reg[current_instruction.r] = current_instruction.d;
+                std::cout << "Presiona Enter para continuar..." << std::endl;
+                std::cin.get();
+                break;
+            case ST:
+                imprimir_estado_maquina(current_instruction);
+                a = current_instruction.d + reg[current_instruction.s];
+                if (a < 0 || a >= DATOS_MAXIMO) {
+                    std::cerr << "Error: Acceso a memoria fuera de límites en la línea " << current_instruction.no_linea << std::endl;
+                    return;
+                }
+                datos_Memoria[a] = reg[current_instruction.r];
+                std::cout << "Presiona Enter para continuar..." << std::endl;
+                std::cin.get();
+                break;
+            case JLT:
+                imprimir_estado_maquina(current_instruction);
+                if (reg[current_instruction.r] < 0) {
+                    //reg[PC_REGISTRO] = current_instruction.d;
+                    reg[PC_REGISTRO] = current_instruction.d + reg[current_instruction.s];
+                    continue; // Continuamos el bucle sin incrementar el PC
+                }
+                std::cout << "Presiona Enter para continuar..." << std::endl;
+                std::cin.get();
+                break;
+            case JLE:
+                imprimir_estado_maquina(current_instruction);
+                if (reg[current_instruction.r] <= 0) {
+                    //reg[PC_REGISTRO] = current_instruction.d;
+                    reg[PC_REGISTRO] = current_instruction.d + reg[current_instruction.s];
+                    continue;
+                }
+                std::cout << "Presiona Enter para continuar..." << std::endl;
+                std::cin.get();
+                break;
+            case JGE:
+                imprimir_estado_maquina(current_instruction);
+                if (reg[current_instruction.r] >= 0) {
+                    //reg[PC_REGISTRO] = current_instruction.d;
+                    reg[PC_REGISTRO] = current_instruction.d + reg[current_instruction.s];
+                    continue;
+                }
+                std::cout << "Presiona Enter para continuar..." << std::endl;
+                std::cin.get();
+                break;
+            case JGT:
+                imprimir_estado_maquina(current_instruction);
+                if (reg[current_instruction.r] > 0) { 
+
+
+                    reg[PC_REGISTRO] = current_instruction.d + reg[current_instruction.s];
+
+                    continue;
+                }
+                std::cout << "Presiona Enter para continuar..." << std::endl;
+                std::cin.get();
+                break;
+            case JEQ:
+                imprimir_estado_maquina(current_instruction);
+                if (reg[current_instruction.r] == 0) {
+                    reg[PC_REGISTRO] = current_instruction.d + reg[current_instruction.s];
+                    continue;
+                }
+                std::cout << "Presiona Enter para continuar..." << std::endl;
+                std::cin.get();
+                break;
+            case JNE:
+                imprimir_estado_maquina(current_instruction);
+                if (reg[current_instruction.r] != 0) {
+                    reg[PC_REGISTRO] = current_instruction.d + reg[current_instruction.s];
+
+                    continue;
+                }
+                std::cout << "Presiona Enter para continuar..." << std::endl;
+                std::cin.get();
+                break;
+        }
+
+        // Si no se ejecutó un salto, incrementamos el PC para pasar a la siguiente instrucción.
+        reg[PC_REGISTRO]++;
+    }
+}
+
+void imprimir_estado_maquina(Instruccion instruccion_actual) {
+    std::cout << "Instrucción actual (línea " << instruccion_actual.no_linea << "): ";
+    switch (instruccion_actual.comando) {
+        case HALT: std::cout << "HALT"; break;
+        case IN: std::cout << "IN"; break;
+        case OUT: std::cout << "OUT"; break;
+        case ADD: std::cout << "ADD"; break;
+        case SUB: std::cout << "SUB"; break;
+        case MUL: std::cout << "MUL"; break;
+        case DIV: std::cout << "DIV"; break;
+        case LD: std::cout << "LD"; break;
+        case LDA: std::cout << "LDA"; break;
+        case LDC: std::cout << "LDC"; break;
+        case ST: std::cout << "ST"; break;
+        case JLT: std::cout << "JLT"; break;
+        case JLE: std::cout << "JLE"; break;
+        case JGE: std::cout << "JGE"; break;
+        case JGT: std::cout << "JGT"; break;
+        case JEQ: std::cout << "JEQ"; break;
+        case JNE: std::cout << "JNE"; break;
+    }
+    std::cout << " Operandos (r=" << instruccion_actual.r 
+              << ", s=" << instruccion_actual.s 
+              << ", t=" << instruccion_actual.t 
+              << ", d=" << instruccion_actual.d 
+              << ")" << std::endl;
+
+    std::cout << "Registros: ";
+    for (int i = 0; i < NUMERO_REGISTROS; ++i) {
+        std::cout << "R" << i << "=" << reg[i] << " ";
+    }
+    std::cout << std::endl;
+
+
+    std::cout << std::endl;
+
+}
+
+void imprimir_instrucciones(Instruccion* instrucciones) {
+    unsigned int i = 0;
+    do{
+        std::cout << instrucciones[i].no_linea << ": "; 
+        switch (instrucciones[i].comando) {
+            case HALT: std::cout << "HALT "
+            << instrucciones[i].r << ","  << instrucciones[i].s << "," << instrucciones[i].t ;  
+            i++;
+            break;
+            case IN: std::cout << "IN " 
+            << instrucciones[i].r << ","  << instrucciones[i].s << "," << instrucciones[i].t ; 
+            i++;
+            break;
+            case OUT: std::cout << "OUT "
+            << instrucciones[i].r << ","  << instrucciones[i].s << "," << instrucciones[i].t ;
+            i++;
+                break;
+            case ADD: std::cout << "ADD "
+            << instrucciones[i].r << ","  << instrucciones[i].s << "," << instrucciones[i].t ;
+            i++;
+                break;
+            case SUB: std::cout << "SUB "
+            << instrucciones[i].r << ","  << instrucciones[i].s << "," << instrucciones[i].t ;
+            i++;
+                break;
+            case MUL: std::cout << "MUL "
+            << instrucciones[i].r << ","  << instrucciones[i].s << "," << instrucciones[i].t ;
+            i++;
+                break;
+            case DIV: std::cout << "DIV "
+            << instrucciones[i].r << ","  << instrucciones[i].s << "," << instrucciones[i].t ;
+            i++;
+                break;
+            case LD: std::cout << "LD "
+            << instrucciones[i].r << ","  << instrucciones[i].d << "(" << instrucciones[i].s << ")";
+            i++;
+                break;
+            case LDA: std::cout << "LDA " 
+            << instrucciones[i].r << ","  << instrucciones[i].d << "(" << instrucciones[i].s << ")";
+            i++;
+                break;
+            case LDC: std::cout << "LDC "
+            << instrucciones[i].r << ","  << instrucciones[i].d << "(" << instrucciones[i].s << ")";
+            i++;
+                break;
+            case ST: std::cout << "ST "
+            << instrucciones[i].r << ","  << instrucciones[i].d << "(" << instrucciones[i].s << ")";
+            i++;
+                break;
+            case JLT: std::cout << "JLT "
+            << instrucciones[i].r << ","  << instrucciones[i].d << "(" << instrucciones[i].s << ")";
+            i++;
+                break;
+            case JLE: std::cout << "JLE "
+            << instrucciones[i].r << ","  << instrucciones[i].d << "(" << instrucciones[i].s << ")";
+            i++;
+                break;
+            case JGE: std::cout << "JGE "
+            << instrucciones[i].r << ","  << instrucciones[i].d << "(" << instrucciones[i].s << ")";
+            i++;
+                break;
+            case JGT: std::cout << "JGT "
+            << instrucciones[i].r << ","  << instrucciones[i].d << "(" << instrucciones[i].s << ")";
+            i++;
+                break;
+            case JEQ: std::cout << "JEQ "
+            << instrucciones[i].r << ","  << instrucciones[i].d << "(" << instrucciones[i].s << ")";
+            i++;
+                break;
+            case JNE: std::cout << "JNE "
+            << instrucciones[i].r << ","  << instrucciones[i].d << "(" << instrucciones[i].s << ")";
+            i++;
+                break;
+        }
+        std::cout << std::endl;
+    }while(instrucciones[i - 1].comando != HALT && i < INSTRUCCIONES_MAXIMO);
+
 }
