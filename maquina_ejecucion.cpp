@@ -165,22 +165,28 @@ void ejecutar_codigo(Instruccion* instrucciones) {
         // El switch ahora maneja la ejecución de la instrucción.
         switch (current_instruction.comando) {
             case IN:
+                reg[PC_REGISTRO]++;
                 std::cout << "? ";
                 std::cin >> reg[current_instruction.r];
                 break;
             case OUT:
+                reg[PC_REGISTRO]++;
                 std::cout << "> " << reg[current_instruction.r] << std::endl;
                 break;
             case ADD:
+                reg[PC_REGISTRO]++;
                 reg[current_instruction.r] = reg[current_instruction.s] + reg[current_instruction.t];
                 break;
             case SUB:
+                reg[PC_REGISTRO]++;
                 reg[current_instruction.r] = reg[current_instruction.s] - reg[current_instruction.t];
                 break;
             case MUL:
+                reg[PC_REGISTRO]++;
                 reg[current_instruction.r] = reg[current_instruction.s] * reg[current_instruction.t];
                 break;
             case DIV:
+                reg[PC_REGISTRO]++;
                 if (reg[current_instruction.t] == 0) {
                     std::cerr << "Error: División por cero en la instrucción en línea " << current_instruction.no_linea << std::endl;
                     return;
@@ -188,6 +194,7 @@ void ejecutar_codigo(Instruccion* instrucciones) {
                 reg[current_instruction.r] = reg[current_instruction.s] / reg[current_instruction.t];
                 break;
             case LD:
+                reg[PC_REGISTRO]++;
                 a = current_instruction.d + reg[current_instruction.s];
                 if (a < 0 || a >= DATOS_MAXIMO) {
                     std::cerr << "Error: Acceso a memoria fuera de límites en la línea " << current_instruction.no_linea << std::endl;
@@ -196,12 +203,15 @@ void ejecutar_codigo(Instruccion* instrucciones) {
                 reg[current_instruction.r] = datos_Memoria[a];
                 break;
             case LDA:
+                reg[PC_REGISTRO]++;
                 reg[current_instruction.r] = current_instruction.d + reg[current_instruction.s];
                 break;
             case LDC:
+                reg[PC_REGISTRO]++;
                 reg[current_instruction.r] = current_instruction.d;
                 break;
             case ST:
+                reg[PC_REGISTRO]++;
                 a = current_instruction.d + reg[current_instruction.s];
                 if (a < 0 || a >= DATOS_MAXIMO) {
                     std::cerr << "Error: Acceso a memoria fuera de límites en la línea " << current_instruction.no_linea << std::endl;
@@ -210,13 +220,15 @@ void ejecutar_codigo(Instruccion* instrucciones) {
                 datos_Memoria[a] = reg[current_instruction.r];
                 break;
             case JLT:
+                reg[PC_REGISTRO]++;
                 if (reg[current_instruction.r] < 0) {
                     //reg[PC_REGISTRO] = current_instruction.d;
                     reg[PC_REGISTRO] = current_instruction.d + reg[current_instruction.s];
                     continue; // Continuamos el bucle sin incrementar el PC
-                }
+                }                 
                 break;
             case JLE:
+                reg[PC_REGISTRO]++;
                 if (reg[current_instruction.r] <= 0) {
                     //reg[PC_REGISTRO] = current_instruction.d;
                     reg[PC_REGISTRO] = current_instruction.d + reg[current_instruction.s];
@@ -224,6 +236,7 @@ void ejecutar_codigo(Instruccion* instrucciones) {
                 }
                 break;
             case JGE:
+                reg[PC_REGISTRO]++;
                 if (reg[current_instruction.r] >= 0) {
                     //reg[PC_REGISTRO] = current_instruction.d;
                     reg[PC_REGISTRO] = current_instruction.d + reg[current_instruction.s];
@@ -231,8 +244,8 @@ void ejecutar_codigo(Instruccion* instrucciones) {
                 }
                 break;
             case JGT:
+                reg[PC_REGISTRO]++;
                 if (reg[current_instruction.r] > 0) { 
-
 
                     reg[PC_REGISTRO] = current_instruction.d + reg[current_instruction.s];
 
@@ -240,12 +253,14 @@ void ejecutar_codigo(Instruccion* instrucciones) {
                 }
                 break;
             case JEQ:
+                reg[PC_REGISTRO]++;
                 if (reg[current_instruction.r] == 0) {
                     reg[PC_REGISTRO] = current_instruction.d + reg[current_instruction.s];
                     continue;
                 }
                 break;
             case JNE:
+                reg[PC_REGISTRO]++;
                 if (reg[current_instruction.r] != 0) {
                     reg[PC_REGISTRO] = current_instruction.d + reg[current_instruction.s];
 
@@ -255,7 +270,6 @@ void ejecutar_codigo(Instruccion* instrucciones) {
         }
 
         // Si no se ejecutó un salto, incrementamos el PC para pasar a la siguiente instrucción.
-        reg[PC_REGISTRO]++;
     }
 }
 
