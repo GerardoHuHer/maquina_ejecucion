@@ -1,10 +1,5 @@
-
-1001: HALT 0,0,0
-1: IN 1,0,0 Petición para primer número
-* 6: POP 0,0,0
-* + Priueba
-
-3: MUL 3,1,2 Operación que harán los dos registros
-1000: OUT 3,0,0
-2: IN 2,0,0
-999: LDC 2,3,4
+0: IN 1,0,0
+1: IN 2,0,0
+2: DIV 1,1,2
+3: OUT 1,0,0
+4: HALT 0,0,0

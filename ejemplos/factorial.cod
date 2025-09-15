@@ -1,10 +1,10 @@
 * Código para probar con la función factorial
 * Registro 0 será donde almacenaremos el factorial
 0: IN 0,0,0 * El usuario ingresa el input en el registro 1
-2: LDC 2,1(0)
-3: LDC 1,1(0) * Cargamos un 1 en el registro 2
-4: MUL 1,0,1 * Multiplicación
-6: SUB 0,0,2 * Restamos el valor del registro 1 con un 1 que almacenamos en el registro 2
-7: JGT 0,-2(7)
-8: OUT 1,0,0
-9: HALT 0,0,0
+1: LDC 2,1(0)
+2: LDC 1,1(0) * Cargamos un 1 en el registro 2
+3: MUL 1,0,1 * Multiplicación
+4: SUB 0,0,2 * Restamos el valor del registro 1 con un 1 que almacenamos en el registro 2
+5: JGT 0,-2(7)
+6: OUT 1,0,0
+7: HALT 0,0,0
