@@ -63,4 +63,10 @@ void separar_variables( TipoComando instruccion, int& r, int& s, int& t, int& d,
 */
 void ejecutar_codigo(Instruccion* arr);
 
+void ejecutar_codigo_debug(Instruccion* arr);
+
+void imprimir_estado_maquina(Instruccion instruccion_actual);
+
+void imprimir_instrucciones(Instruccion* instrucciones);
+
 #endif
