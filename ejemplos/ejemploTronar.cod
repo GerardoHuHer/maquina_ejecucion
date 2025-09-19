@@ -1,0 +1,11 @@
+* R[3] = cont = 0
+* R[1] = numerador
+* R[2] = denominador 
+* R[6] = 1
+
+0: IN 1,0,0
+1: IN 2,0,0
+2: SUB 1,1,2
+3: LDC 6,1(0)
+4: LDC 3,0(0)
+5: ADD 3,3,6
