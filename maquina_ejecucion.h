@@ -32,7 +32,7 @@ extern int reg[NUMERO_REGISTROS]; // Registros de la máquina
 extern int datos_Memoria[DATOS_MAXIMO]; // Arreglo de memoria de datos
 
 /*
-@brief Función que se encarga de analizar el archivo de instrucciones y llenar la memoria de instrucciones.
+@brief Función que se encarga de analizar el archivo de instrucciones y llenar el arreglo de instrucciones.
 @param instrucciones Puntero a la memoria de instrucciones.
 @param path Ruta del archivo a analizar.
 */
@@ -68,5 +68,6 @@ void ejecutar_codigo_debug(Instruccion* arr);
 void imprimir_estado_maquina(Instruccion instruccion_actual);
 
 void imprimir_instrucciones(Instruccion* instrucciones);
+
 
 #endif
