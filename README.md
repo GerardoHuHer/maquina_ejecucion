@@ -39,7 +39,3 @@ g++ main.cpp maquina_ejecucion.cpp maquina_ejecucion.h -o <nombre_ejecutable>.ou
 ```bash
 ./<nombre_ejecutable>.out --code <archivo_instrucciones>.cod
 ```
-### Ayuda
-```bash
-./<nombre_ejecutable>.out --help
-```
