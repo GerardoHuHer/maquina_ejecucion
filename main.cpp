@@ -15,10 +15,14 @@ int main(int argc, char** argv) {
         return 0;
     }
 
+
+    datos_Memoria[0] = DATOS_MAXIMO - 1;
+
     Instruccion* instrucciones_memoria= new Instruccion[INSTRUCCIONES_MAXIMO];
     for(unsigned int i = 0; i < INSTRUCCIONES_MAXIMO; i++){
         instrucciones_memoria[i].comando = HALT;
         instrucciones_memoria[i].no_linea = i; 
+        instrucciones_memoria[i].r = 0;
         instrucciones_memoria[i].d = 0;
         instrucciones_memoria[i].s = 0;
         instrucciones_memoria[i].t = 0;
@@ -28,9 +32,6 @@ int main(int argc, char** argv) {
 
     if(argc == 2 && std::string(argv[1]) != "--debug") {
         lexer(instrucciones_memoria, argv[1]);
-        std::sort(instrucciones_memoria, instrucciones_memoria + INSTRUCCIONES_MAXIMO, [](const Instruccion& a, const Instruccion& b) {
-            return a.no_linea < b.no_linea;
-        });
         ejecutar_codigo(instrucciones_memoria);
         return 0;
 
@@ -46,11 +47,6 @@ int main(int argc, char** argv) {
 
     if(argc == 3 && std::string(argv[1]) == "--debug") {
         lexer(instrucciones_memoria, argv[2]);
-    std::sort(instrucciones_memoria, instrucciones_memoria + INSTRUCCIONES_MAXIMO, [](const Instruccion& a, const Instruccion& b) {
-        return a.no_linea < b.no_linea;
-    });
-
-
         ejecutar_codigo_debug(instrucciones_memoria);
         return 0;
     } 
